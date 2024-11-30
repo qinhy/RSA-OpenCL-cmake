@@ -53,8 +53,8 @@ std::string stradd(const std::string& a, const std::string& b) {
 
 void decrypt_message(cl_context context, cl_command_queue queue, cl_program program,
                  const Bignum &p, const Bignum &q, const Bignum &ciphertext,
-                //  Bignum &d,
-                int d,
+                 Bignum &d,
+                // int d,
                  Bignum &plaintext) {
     cl_int err;
     
@@ -63,6 +63,7 @@ void decrypt_message(cl_context context, cl_command_queue queue, cl_program prog
     cl_mem cl_q = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(Bignum), (void*)&q, &err);
     cl_mem cl_C = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(Bignum), (void*)&ciphertext, &err);
     cl_mem cl_result = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(Bignum), nullptr, &err);
+    cl_mem cl_d = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(Bignum), (void*)&d, &err);
 
     // Create and configure the kernel
     cl_kernel decrypt_kernel = clCreateKernel(program, "rsa_decipher", &err);
@@ -70,7 +71,7 @@ void decrypt_message(cl_context context, cl_command_queue queue, cl_program prog
     clSetKernelArg(decrypt_kernel, 1, sizeof(cl_mem), &cl_q);
     clSetKernelArg(decrypt_kernel, 2, sizeof(cl_mem), &cl_C);
     clSetKernelArg(decrypt_kernel, 3, sizeof(cl_mem), &cl_result);
-    clSetKernelArg(decrypt_kernel, 4, sizeof(int), &d);
+    clSetKernelArg(decrypt_kernel, 4, sizeof(cl_mem), &cl_d);
     // clSetKernelArg(decrypt_kernel, 4, sizeof(cl_mem), &d);
 
     // Execute the kernel
@@ -238,7 +239,7 @@ int main(int argc, char* argv[]) {
     std::cout << "\tQ: ";q.print();
 
     
-    d_big.from_string("503");
+    d_big.from_string("4300873130309566001307595370178131174047805733193763779790398702183458908121331287198605103855403078045095271534621549239903793732518846518702371636833473");
     std::cout << "\tD: ";d_big.print();
 
     // p, q: Prime factors of the RSA modulus.
@@ -256,7 +257,7 @@ int main(int argc, char* argv[]) {
     std::cout << "\nEncrypted Result: ";
     en_result.print();
     // Decrypt: rsa_decipher
-    decrypt_message(context, queue, program, p, q, en_result, d, de_result);
+    decrypt_message(context, queue, program, p, q, en_result, d_big, de_result);
     std::cout << "\nDecrypted Result: ";
     de_result.print();
 

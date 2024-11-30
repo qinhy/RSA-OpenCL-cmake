@@ -57,4 +57,4 @@ def generate_rsa_config(bits, message, filename):
 
 # Usage example
 if __name__ == "__main__":
-    generate_rsa_config(128, 35, "conf_file.txt")
+    generate_rsa_config(256, 35, "conf_file.txt")
