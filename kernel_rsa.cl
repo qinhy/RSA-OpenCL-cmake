@@ -286,3 +286,21 @@ __kernel void rsa_cypher(__global bignum *p, __global bignum *q, __global bignum
 
     *result = cmod;
 }
+
+__kernel void rsa_decipher(__global bignum *p, __global bignum *q, __global bignum *C, __global bignum *result, int d)
+{
+    bignum lp, lq, n, m, mmod, one, d_bignum;
+    lp = *p;
+    lq = *q;
+
+    int_to_bignum(d, &d_bignum);
+    int_to_bignum(1, &one);
+    
+    multiply_bignum(&lp, &lq, &n);
+    
+    m = *C; // Ciphertext
+    mmod = bignum_fme_modpow(&m, &d_bignum, &n); // Decrypt using (C^d) mod n
+
+    *result = mmod;
+}
+

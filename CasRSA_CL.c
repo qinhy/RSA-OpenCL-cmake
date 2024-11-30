@@ -9,7 +9,7 @@
 #define __NO_STD_VECTOR
 #define MAX_SOURCE_SIZE (0x100000)
 #ifndef MAXDIGITS
-#define	MAXDIGITS	500		/* maximum length bignum */
+#define	MAXDIGITS	2048		/* maximum length bignum */
 #endif
 
 #define PLUS		1		/* positive sign bit */
@@ -20,7 +20,7 @@
 #include <time.h>
 #include <string.h>
 
-#include <OpenCL/OpenCL.h>
+#include <CL/cl.h>
 
 typedef struct {
     char digits[MAXDIGITS];         /* represent the number */
@@ -175,7 +175,7 @@ int main(int argc, const char * argv[])
 
     cl_uint maxThreads;
     clGetDeviceInfo(device, CL_KERNEL_WORK_GROUP_SIZE, sizeof(maxThreads), &maxThreads, NULL);
-    //printf("\nRunning with %i threads per compute units", maxThreads); //Utilize the maximum number of threads/cu
+    printf("\nRunning with %i threads per compute units", maxThreads); //Utilize the maximum number of threads/cu
 
     context = clCreateContext(0, 1, &device, NULL, NULL, &err);
     if (err != CL_SUCCESS) { printf("context"); }
